@@ -29,14 +29,11 @@ function create() {
   graphics = game.add.graphics(0, 0);
 
   // Manually created arrow sequence
-  actions = new Array(7);
+  actions = new Array(4);
   actions[0] = new Action(0 + songOffset, 'up');
-  actions[1] = new Action(2000 + songOffset, 'up');
-  actions[2] = new Action(4000 + songOffset, 'up');
-  actions[3] = new Action(6000 + songOffset, 'up');
-  actions[4] = new Action(8000 + songOffset, 'left');
-  actions[5] = new Action(10000 + songOffset, 'down');
-  actions[6] = new Action(12000 + songOffset, 'right');
+  actions[1] = new Action(2000 + songOffset, 'left');
+  actions[2] = new Action(4000 + songOffset, 'down');
+  actions[3] = new Action(6000 + songOffset, 'right');
 
   input = game.input.keyboard.addKeys(
     {'up': Phaser.KeyCode.UP,
@@ -146,18 +143,28 @@ function render() {
     graphics.beginFill(0xF78C11);
     for (var i = 0; i < actions.length; i++) {
       var a = actions[i];
-      var pos = (currentTime - a.time)/4 + 180;
-      if (pos - height/2 > 80 || a.isHit) {
+      var pos = (currentTime - a.time)/4;
+      if (pos > 80 || a.isHit) {
         // Don't render missed arrows
         continue;
-      } else if (pos > height/2) {
+      } else if (pos > 0) {
         // Fade out late arrows
-        graphics.fillAlpha = 1 - (pos - height/2) / 80;
+        graphics.fillAlpha = 1 - pos / 80;
       } else {
         // Stay solid until at player
         graphics.fillAlpha = 1.0;
       }
-      graphics.drawCircle(width/2, pos, height/8);
+
+      // Reposition circle based on direction
+      if (a.arrow == 'up') {
+        graphics.drawCircle(width/2, pos + height/2, height/8);
+      } else if (a.arrow == 'left') {
+        graphics.drawCircle(pos + 140 + height/2, height/2, height/8);
+      } else if (a.arrow == 'down') {
+        graphics.drawCircle(width/2, -pos + height/2, height/8);
+      } else if (a.arrow == 'right') {
+        graphics.drawCircle(-pos + height/2 + 140, height/2, height/8);
+      }
     }
     graphics.endFill();
   }
