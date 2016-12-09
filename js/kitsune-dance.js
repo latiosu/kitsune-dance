@@ -142,6 +142,9 @@ function render() {
     graphics.drawCircle(width/2, height/2, height/8);
     graphics.endFill();
 
+    // Play tween when player hits arrow
+    // if ()
+
     // Render falling arrows
     graphics.beginFill(0xF78C11);
     for (var i = 0; i < actions.length; i++) {
@@ -174,13 +177,13 @@ function render() {
 }
 
 function checkArrowInput(arrow) {
-  if (arrow == 'up' && input.up.isDown) {
+  if (arrow == 'up' && input.up.downDuration(200)) {
     return true;
-  } else if (arrow == 'left' && input.left.isDown) {
+  } else if (arrow == 'left' && input.left.downDuration(200)) {
     return true;
-  } else if (arrow == 'down' && input.down.isDown) {
+  } else if (arrow == 'down' && input.down.downDuration(200)) {
     return true;
-  } else if (arrow == 'right' && input.right.isDown) {
+  } else if (arrow == 'right' && input.right.downDuration(200)) {
     return true;
   }
   return false;
