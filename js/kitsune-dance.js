@@ -29,11 +29,14 @@ function create() {
   graphics = game.add.graphics(0, 0);
 
   // Manually created arrow sequence
-  actions = new Array(4);
+  actions = new Array(7);
   actions[0] = new Action(0 + songOffset, 'up');
   actions[1] = new Action(2000 + songOffset, 'left');
   actions[2] = new Action(4000 + songOffset, 'down');
   actions[3] = new Action(6000 + songOffset, 'right');
+  actions[4] = new Action(8000 + songOffset, 'right');
+  actions[5] = new Action(10000 + songOffset, 'right');
+  actions[6] = new Action(12000 + songOffset, 'right');
 
   input = game.input.keyboard.addKeys(
     {'up': Phaser.KeyCode.UP,
