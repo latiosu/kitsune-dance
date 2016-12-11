@@ -18,7 +18,7 @@ var score;
 var judgement;
 var bpm = bpm = 107;
 var tempo = (60 / bpm) * 1000;
-var songOffset = -400 + (43 * tempo);
+var songOffset = -40 + (8 * tempo);
 var currentTime = 0;
 var state = 'ready-screen';
 var actionIndex = 0;
@@ -26,6 +26,11 @@ var chicken;
 var music;
 
 function preload() {
+  var style = { font: 'bold 32px Arial', fill: '#fff', boundsAlignH: 'center', boundsAlignV: 'middle' };
+  var loadingText = game.add.text(0, 0, 'Loading ...', style);
+  loadingText.setTextBounds(0, 0, width, height);
+  ui.set('loadingText', loadingText);
+
   game.load.atlasJSONHash('chicken', 'assets/chicken-atlas.png', 'assets/chicken-atlas.json');
   game.load.audio('24k-magic', ['assets/24k-magic.ogg', 'assets/24k-magic.mp3']);
 }
@@ -35,15 +40,63 @@ function create() {
   music = game.add.audio('24k-magic');
 
   // Manually created arrow sequence
-  actions = new Array(8);
-  actions[0] = new Action(0 * tempo + songOffset, 'up');
-  actions[1] = new Action(1 * tempo + songOffset, 'left');
-  actions[2] = new Action(2 * tempo + songOffset, 'up');
-  actions[3] = new Action(3 * tempo + songOffset, 'left');
-  actions[4] = new Action(4 * tempo + songOffset, 'up');
-  actions[5] = new Action(5 * tempo + songOffset, 'left');
-  actions[6] = new Action(6 * tempo + songOffset, 'up');
-  actions[7] = new Action(7 * tempo + songOffset, 'left');
+  actions = new Array();
+  actions.push(new Action(beat(0), 'left'));
+  actions.push(new Action(beat(2), 'right'));
+  actions.push(new Action(beat(4), 'up'));
+  actions.push(new Action(beat(6), 'down'));
+
+  actions.push(new Action(beat(8), 'left'));
+  actions.push(new Action(beat(9), 'left'));
+  actions.push(new Action(beat(10), 'left'));
+  actions.push(new Action(beat(12), 'right'));
+  actions.push(new Action(beat(13), 'right'));
+  actions.push(new Action(beat(14), 'right'));
+
+  actions.push(new Action(beat(16), 'down'));
+  actions.push(new Action(beat(16), 'up'));
+  actions.push(new Action(beat(18), 'left'));
+  actions.push(new Action(beat(18), 'right'));
+
+  actions.push(new Action(beat(20), 'up'));
+  actions.push(new Action(beat(21), 'up'));
+  actions.push(new Action(beat(22), 'down'));
+  actions.push(new Action(beat(24), 'down'));
+  actions.push(new Action(beat(25), 'down'));
+  actions.push(new Action(beat(26), 'up'));
+
+  actions.push(new Action(beat(28), 'up'));
+  actions.push(new Action(beat(28), 'left'));
+  actions.push(new Action(beat(30), 'up'));
+  actions.push(new Action(beat(30), 'right'));
+
+  actions.push(new Action(beat(32), 'right'));
+  actions.push(new Action(beat(33), 'left'));
+  actions.push(new Action(beat(34), 'right'));
+  actions.push(new Action(beat(34), 'left'));
+
+  actions.push(new Action(beat(36), 'up'));
+  actions.push(new Action(beat(36.5), 'left'));
+  actions.push(new Action(beat(37), 'up'));
+  actions.push(new Action(beat(38), 'down'));
+  actions.push(new Action(beat(38.5), 'right'));
+  actions.push(new Action(beat(39), 'down'));
+  actions.push(new Action(beat(40), 'left'));
+  actions.push(new Action(beat(40.5), 'left'));
+  actions.push(new Action(beat(41), 'right'));
+  actions.push(new Action(beat(41.5), 'right'));
+  actions.push(new Action(beat(42), 'up'));
+  actions.push(new Action(beat(42.5), 'up'));
+  actions.push(new Action(beat(43), 'left'));
+  actions.push(new Action(beat(43.5), 'down'));
+  actions.push(new Action(beat(44), 'right'));
+  actions.push(new Action(beat(44.5), 'down'));
+  actions.push(new Action(beat(45), 'left'));
+  actions.push(new Action(beat(45.5), 'up'));
+  actions.push(new Action(beat(46), 'down'));
+
+  // End arrow sequence
+
 
   input = game.input.keyboard.addKeys(
     {'up': Phaser.KeyCode.UP,
@@ -61,17 +114,19 @@ function create() {
     Phaser.KeyCode.SPACEBAR
   ]);
 
+  ui.get('loadingText').destroy();
+
   var style = { font: 'bold 32px Arial', fill: '#fff', boundsAlignH: 'center', boundsAlignV: 'middle' };
-  var loadingText = game.add.text(0, 0, 'Hit space to start', style);
-  loadingText.setTextBounds(0, 0, width, height);
-  ui.set('loadingText', loadingText);
+  var readyText = game.add.text(0, 0, 'Hit space to start', style);
+  readyText.setTextBounds(0, 0, width, height);
+  ui.set('readyText', readyText);
 }
 
 function update() {
   if (state == 'ready-screen' && input.select.isDown) {
     // Remove pause text
-    ui.get('loadingText').destroy();
-    ui.delete('loadingText');
+    ui.get('readyText').destroy();
+    ui.delete('readyText');
 
     // Add score text
     score = new Score();
@@ -80,14 +135,20 @@ function update() {
     scoreText.setTextBounds(width - 320, 0, 300, 60);
     ui.set('scoreText', scoreText);
 
+    // Add combo text
+    var style = { font: 'bold 24px Arial', fill: '#fff', boundsAlignH: 'left', boundsAlignV: 'middle' };
+    var comboText = game.add.text(0, 0, '', style);
+    comboText.setTextBounds(15, 0, 300, 60);
+    ui.set('comboText', comboText);
+
     // Add judgement text
     style = { font: 'bold 24px Arial', fill: '#fff', boundsAlignH: 'middle', boundsAlignV: 'middle' };
     judgement = game.add.text(game.world.centerX - 25, height - 50, "", style);
     judgement.alpha = 0;
 
     // Add chicken player
-    chicken = game.add.sprite(width/2 - 46, height/2 - 55, 'chicken', '0.png');
-    chicken.scale.setTo(0.3, 0.3);
+    chicken = game.add.sprite(width/2 - 38, height/2 - 48, 'chicken', '0.png');
+    chicken.scale.setTo(0.25, 0.25);
     chicken.animations.add('idle', ['0.png', '1.png'], bpm / 60, true, false);
     chicken.animations.play('idle');
 
@@ -152,10 +213,10 @@ function render() {
   graphics.clear();
   if (state == 'game-screen') {
     // Render player position
-    // graphics.beginFill(0xFFFFFF);
-    // graphics.fillAlpha = 0.5;
-    // graphics.drawCircle(width/2, height/2, height/8);
-    // graphics.endFill();
+    graphics.beginFill(0xFFFFFF);
+    graphics.fillAlpha = 0.5;
+    graphics.drawCircle(width/2, height/2, height/8);
+    graphics.endFill();
 
     // Play tween when player hits arrow
     // if ()
@@ -204,6 +265,10 @@ function checkArrowInput(arrow) {
   return false;
 }
 
+function beat(number) {
+  return number * tempo + songOffset;
+}
+
 function Action(time, arrow) {
   this.time = time;
   this.arrow = arrow;
@@ -241,6 +306,12 @@ function Score() {
         this.perfect += 1;
         this.value += 1500;
       }
+    }
+    ui.get('scoreText').text = this.value;
+    if (this.combo >= 5) {
+      ui.get('comboText').text = this.combo + ' combo';
+    } else {
+      ui.get('comboText').text = '';
     }
   };
 }
