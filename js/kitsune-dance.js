@@ -20,13 +20,19 @@ var songOffset = 3000;
 var currentTime = 0;
 var state = 'ready-screen';
 var actionIndex = 0;
+var chicken;
+var music;
+var bpm;
 
 function preload() {
-
+  game.load.atlasJSONHash('chicken', 'assets/chicken-atlas.png', 'assets/chicken-atlas.json');
+  game.load.audio('24k-magic', ['assets/24k-magic.mp3']);
 }
 
 function create() {
   graphics = game.add.graphics(0, 0);
+  music = game.add.audio('24k-magic');
+  bpm = 107;
 
   // Manually created arrow sequence
   actions = new Array(7);
@@ -78,7 +84,14 @@ function update() {
     judgement = game.add.text(game.world.centerX - 25, height - 50, "", style);
     judgement.alpha = 0;
 
-    // TODO -- Play music
+    // Add chicken player
+    chicken = game.add.sprite(width/2 - 46, height/2 - 55, 'chicken', '0.png');
+    chicken.scale.setTo(0.3, 0.3);
+    chicken.animations.add('idle', ['0.png', '1.png'], bpm / 60, true, false);
+    chicken.animations.play('idle');
+
+    music.volume = 0.5;
+    music.play();
 
     state = 'game-screen';
     console.log('Going to game screen');
@@ -138,9 +151,10 @@ function render() {
   graphics.clear();
   if (state == 'game-screen') {
     // Render player position
-    graphics.beginFill(0xFFFFFF);
-    graphics.drawCircle(width/2, height/2, height/8);
-    graphics.endFill();
+    // graphics.beginFill(0xFFFFFF);
+    // graphics.fillAlpha = 0.5;
+    // graphics.drawCircle(width/2, height/2, height/8);
+    // graphics.endFill();
 
     // Play tween when player hits arrow
     // if ()
