@@ -16,33 +16,34 @@ var input;
 var actions;
 var score;
 var judgement;
-var songOffset = 3000;
+var bpm = bpm = 107;
+var tempo = (60 / bpm) * 1000;
+var songOffset = -400 + (43 * tempo);
 var currentTime = 0;
 var state = 'ready-screen';
 var actionIndex = 0;
 var chicken;
 var music;
-var bpm;
 
 function preload() {
   game.load.atlasJSONHash('chicken', 'assets/chicken-atlas.png', 'assets/chicken-atlas.json');
-  game.load.audio('24k-magic', ['assets/24k-magic.mp3']);
+  game.load.audio('24k-magic', ['assets/24k-magic.ogg', 'assets/24k-magic.mp3']);
 }
 
 function create() {
   graphics = game.add.graphics(0, 0);
   music = game.add.audio('24k-magic');
-  bpm = 107;
 
   // Manually created arrow sequence
-  actions = new Array(7);
-  actions[0] = new Action(0 + songOffset, 'up');
-  actions[1] = new Action(2000 + songOffset, 'left');
-  actions[2] = new Action(4000 + songOffset, 'down');
-  actions[3] = new Action(6000 + songOffset, 'right');
-  actions[4] = new Action(8000 + songOffset, 'right');
-  actions[5] = new Action(10000 + songOffset, 'right');
-  actions[6] = new Action(12000 + songOffset, 'right');
+  actions = new Array(8);
+  actions[0] = new Action(0 * tempo + songOffset, 'up');
+  actions[1] = new Action(1 * tempo + songOffset, 'left');
+  actions[2] = new Action(2 * tempo + songOffset, 'up');
+  actions[3] = new Action(3 * tempo + songOffset, 'left');
+  actions[4] = new Action(4 * tempo + songOffset, 'up');
+  actions[5] = new Action(5 * tempo + songOffset, 'left');
+  actions[6] = new Action(6 * tempo + songOffset, 'up');
+  actions[7] = new Action(7 * tempo + songOffset, 'left');
 
   input = game.input.keyboard.addKeys(
     {'up': Phaser.KeyCode.UP,
