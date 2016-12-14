@@ -16,16 +16,21 @@ var input;
 var actions;
 var score;
 var judgement;
+
 var bpm = bpm = 107;
 var tempo = (60 / bpm) * 1000;
 var songOffset = -40 + (8 * tempo);
 var currentTime = 0;
+
+var isPaused = false;
 var state = 'ready-screen';
 var actionIndex = 0;
 var chicken;
 var music;
 
 function preload() {
+  game.forceSingleUpdate = true;
+
   var style = { font: 'bold 32px Arial', fill: '#fff', boundsAlignH: 'center', boundsAlignV: 'middle' };
   var loadingText = game.add.text(0, 0, 'Loading ...', style);
   loadingText.setTextBounds(0, 0, width, height);
@@ -33,9 +38,13 @@ function preload() {
 
   game.load.atlasJSONHash('chicken', 'assets/chicken-atlas.png', 'assets/chicken-atlas.json');
   game.load.audio('24k-magic', ['assets/24k-magic.ogg', 'assets/24k-magic.mp3']);
+  game.load.image('pulse', 'assets/pulse.png');
 }
 
 function create() {
+  // Primary components
+  game.stage.disableVisibilityChange = true;
+  game.stage.backgroundColor = '#f1ce78';
   graphics = game.add.graphics(0, 0);
   music = game.add.audio('24k-magic');
 
@@ -95,6 +104,132 @@ function create() {
   actions.push(new Action(beat(45.5), 'up'));
   actions.push(new Action(beat(46), 'down'));
 
+  actions.push(new Action(beat(48), 'left'));
+  actions.push(new Action(beat(48.5), 'right'));
+  actions.push(new Action(beat(49), 'up'));
+
+  actions.push(new Action(beat(50), 'right'));
+  actions.push(new Action(beat(50.5), 'left'));
+  actions.push(new Action(beat(51), 'down'));
+
+  actions.push(new Action(beat(52), 'left'));
+  actions.push(new Action(beat(52.5), 'down'));
+  actions.push(new Action(beat(53), 'left'));
+  actions.push(new Action(beat(53.5), 'up'));
+  actions.push(new Action(beat(54), 'left'));
+
+  actions.push(new Action(beat(56), 'down'));
+  actions.push(new Action(beat(56.5), 'down'));
+  actions.push(new Action(beat(57), 'up'));
+  actions.push(new Action(beat(57.5), 'right'));
+  actions.push(new Action(beat(58), 'down'));
+  actions.push(new Action(beat(58.5), 'down'));
+  actions.push(new Action(beat(59), 'left'));
+  actions.push(new Action(beat(59.5), 'up'));
+
+  actions.push(new Action(beat(60), 'right'));
+  actions.push(new Action(beat(60.5), 'down'));
+  actions.push(new Action(beat(61), 'left'));
+  actions.push(new Action(beat(61.5), 'up'));
+  actions.push(new Action(beat(62), 'left'));
+  actions.push(new Action(beat(62), 'right'));
+
+  actions.push(new Action(beat(63), 'up'));
+  actions.push(new Action(beat(64), 'down'));
+  actions.push(new Action(beat(65), 'left'));
+  actions.push(new Action(beat(66), 'right'));
+  actions.push(new Action(beat(67), 'up'));
+
+  actions.push(new Action(beat(68), 'right'));
+  actions.push(new Action(beat(68.5), 'right'));
+  actions.push(new Action(beat(69), 'right'));
+
+  actions.push(new Action(beat(70), 'left'));
+  actions.push(new Action(beat(70.5), 'left'));
+  actions.push(new Action(beat(71), 'left'));
+
+  actions.push(new Action(beat(72), 'down'));
+  actions.push(new Action(beat(73), 'up'));
+  actions.push(new Action(beat(74), 'right'));
+  actions.push(new Action(beat(75), 'left'));
+  actions.push(new Action(beat(76), 'down'));
+
+  actions.push(new Action(beat(77), 'left'));
+  actions.push(new Action(beat(77.5), 'left'));
+  actions.push(new Action(beat(78), 'left'));
+
+  actions.push(new Action(beat(79), 'right'));
+  actions.push(new Action(beat(79.5), 'right'));
+  actions.push(new Action(beat(80), 'right'));
+
+  actions.push(new Action(beat(81), 'up'));
+  actions.push(new Action(beat(82), 'up'));
+  actions.push(new Action(beat(83), 'down'));
+
+  actions.push(new Action(beat(84), 'left'));
+  actions.push(new Action(beat(84.5), 'down'));
+  actions.push(new Action(beat(85), 'left'));
+  actions.push(new Action(beat(86), 'right'));
+  actions.push(new Action(beat(86.5), 'down'));
+  actions.push(new Action(beat(87), 'right'));
+
+  actions.push(new Action(beat(88), 'up'));
+  actions.push(new Action(beat(89), 'left'));
+  actions.push(new Action(beat(90), 'right'));
+  actions.push(new Action(beat(91), 'up'));
+
+  actions.push(new Action(beat(92), 'up'));
+  actions.push(new Action(beat(92.25), 'up'));
+  actions.push(new Action(beat(93), 'left'));
+  actions.push(new Action(beat(93.25), 'left'));
+  actions.push(new Action(beat(94), 'right'));
+  actions.push(new Action(beat(94.25), 'right'));
+  actions.push(new Action(beat(95), 'down'));
+  actions.push(new Action(beat(95.25), 'down'));
+
+  actions.push(new Action(beat(96), 'left'));
+  actions.push(new Action(beat(96), 'right'));
+
+  // -- repeat
+
+  actions.push(new Action(beat(97), 'left'));
+  actions.push(new Action(beat(98), 'right'));
+  actions.push(new Action(beat(99), 'up'));
+  actions.push(new Action(beat(100), 'down'));
+
+  actions.push(new Action(beat(101), 'left'));
+  actions.push(new Action(beat(101.5), 'left'));
+  actions.push(new Action(beat(102), 'left'));
+  actions.push(new Action(beat(103), 'right'));
+  actions.push(new Action(beat(103.5), 'right'));
+  actions.push(new Action(beat(104), 'right'));
+
+  actions.push(new Action(beat(105), 'left'));
+  actions.push(new Action(beat(106), 'left'));
+  actions.push(new Action(beat(107), 'left'));
+  actions.push(new Action(beat(108), 'right'));
+
+  actions.push(new Action(beat(109), 'left'));
+  actions.push(new Action(beat(110), 'left'));
+  actions.push(new Action(beat(111), 'left'));
+  actions.push(new Action(beat(112), 'left'));
+
+  actions.push(new Action(beat(113), 'right'));
+  actions.push(new Action(beat(114), 'right'));
+  actions.push(new Action(beat(115), 'right'));
+  actions.push(new Action(beat(116), 'right'));
+
+  actions.push(new Action(beat(117), 'up'));
+  actions.push(new Action(beat(118), 'up'));
+  actions.push(new Action(beat(119), 'up'));
+  actions.push(new Action(beat(120), 'up'));
+
+  actions.push(new Action(beat(121), 'up'));
+  actions.push(new Action(beat(122), 'up'));
+  actions.push(new Action(beat(123), 'up'));
+  actions.push(new Action(beat(124), 'left'));
+  actions.push(new Action(beat(124), 'right'));
+
   // End arrow sequence
 
 
@@ -103,7 +238,8 @@ function create() {
     'down': Phaser.KeyCode.DOWN,
     'left': Phaser.KeyCode.LEFT,
     'right': Phaser.KeyCode.RIGHT,
-    'select': Phaser.KeyCode.SPACEBAR
+    'select': Phaser.KeyCode.SPACEBAR,
+    'pause': Phaser.KeyCode.ESC
   });
   // Capture default browser action
   game.input.keyboard.addKeyCapture([
@@ -111,8 +247,11 @@ function create() {
     Phaser.KeyCode.DOWN,
     Phaser.KeyCode.LEFT,
     Phaser.KeyCode.RIGHT,
-    Phaser.KeyCode.SPACEBAR
+    Phaser.KeyCode.SPACEBAR,
+    Phaser.KeyCode.ESC
   ]);
+
+  input.pause.onDown.add(pauseGame, this);
 
   ui.get('loadingText').destroy();
 
@@ -159,7 +298,6 @@ function update() {
     console.log('Going to game screen');
   } else if (state == 'game-screen') {
     currentTime += game.time.elapsed;
-    // TODO -- Actually play level
 
     // Get upcoming arrow
     var action = actions[actionIndex];
@@ -177,6 +315,7 @@ function update() {
         action.isHit = true;
         judgement.text = "Miss";
         judgement.alpha = 1;
+        judgement.fill = "#FF0000";
         game.add.tween(judgement).to({alpha: 0}, 1500, "Linear", true);
         score.add('miss');
       } else if (absDiff < 40 && checkArrowInput(action.arrow)) { // Perfect
@@ -184,20 +323,25 @@ function update() {
         action.isHit = true;
         judgement.text = "Perfect";
         judgement.alpha = 1;
+        judgement.fill = "#FFFF45"
         game.add.tween(judgement).to({alpha: 0}, 1500, "Linear", true);
+        // game.add.tween(pulse).to({alpha: 0}, 1000, "Linear", true);
         score.add('perfect');
       } else if (absDiff < 90 && checkArrowInput(action.arrow)) { // Great
         actionIndex++;
         action.isHit = true;
         judgement.text = "Great";
         judgement.alpha = 1;
+        judgement.fill = "#62F249";
         game.add.tween(judgement).to({alpha: 0}, 1500, "Linear", true);
+        // game.add.tween(pulse).to({alpha: 0}, 1000, "Linear", true);
         score.add('great');
       } else if (absDiff < 150 && checkArrowInput(action.arrow)) { // Ok
         actionIndex++;
         action.isHit = true;
         judgement.text = "Ok";
         judgement.alpha = 1;
+        judgement.fill = "#61F7FF";
         game.add.tween(judgement).to({alpha: 0}, 1500, "Linear", true);
         score.add('ok');
       } else {
@@ -217,9 +361,6 @@ function render() {
     graphics.fillAlpha = 0.5;
     graphics.drawCircle(width/2, height/2, height/8);
     graphics.endFill();
-
-    // Play tween when player hits arrow
-    // if ()
 
     // Render falling arrows
     graphics.beginFill(0xF78C11);
@@ -263,6 +404,18 @@ function checkArrowInput(arrow) {
     return true;
   }
   return false;
+}
+
+function pauseGame() {
+  if (game.paused) {
+    pauseLabel.destroy();
+    music.resume();
+  } else {
+    pauseLabel = game.add.text(width/2, height/2, 'Hit ESC to continue', { font: 'bold 32px Arial', fill: '#fff' });
+    pauseLabel.anchor.setTo(0.5, 0.5);
+    music.pause();
+  }
+  game.paused = !game.paused;
 }
 
 function beat(number) {
